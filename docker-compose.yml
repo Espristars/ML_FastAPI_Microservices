@@ -1,0 +1,84 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    env_file: .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+    depends_on:
+      - zookeeper
+
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+
+  fastapi:
+    build:
+      context: ./docker
+      dockerfile: fastapi.Dockerfile
+    container_name: fastapi
+    env_file: .env
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - kafka
+
+  celery_worker:
+    build:
+      context: ./docker
+      dockerfile: celery.Dockerfile
+    container_name: celery_worker
+    env_file: .env
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - fastapi
+      - kafka
+      - postgres
+    command: celery -A celery_worker.worker worker --loglevel=info
+
+  bot:
+    build:
+      context: ./docker
+      dockerfile: bot.Dockerfile
+    container_name: bot
+    env_file: .env
+    volumes:
+      - ./bot:/app
+    depends_on:
+      - kafka
+      - postgres
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - fastapi
+    restart: always
+
+
+volumes:
+  postgres_data:
