@@ -1,7 +1,8 @@
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .models import Task
+from models import Task
+
 
 async def create_task(session: AsyncSession, user_id: str, payload: dict) -> Task:
     task = Task(user_id=user_id, payload=payload)
@@ -10,9 +11,11 @@ async def create_task(session: AsyncSession, user_id: str, payload: dict) -> Tas
     await session.refresh(task)
     return task
 
+
 async def get_task(session: AsyncSession, task_id: int) -> Task | None:
     result = await session.execute(select(Task).where(Task.id == task_id))
     return result.scalars().first()
+
 
 async def set_task_result(session: AsyncSession, task_id: int, result: dict) -> Task | None:
     stmt = (

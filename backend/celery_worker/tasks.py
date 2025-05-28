@@ -3,8 +3,8 @@ import json
 import time
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 
-from .db.session import SessionLocal
-from .db.crud import set_task_result
+from backend.fastapi_app.db.session import SessionLocal
+from backend.fastapi_app.db.crud import set_task_result
 
 
 KAFKA_BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
@@ -32,7 +32,7 @@ async def consume_tasks():
             async with SessionLocal() as session:
                 await set_task_result(session, task_id, {"status": "processing"})
 
-            result = heavy_processing(payload)
+            result = process_ml(payload)
 
             async with SessionLocal() as session:
                 await set_task_result(session, task_id, {"status": "done", "result": result})

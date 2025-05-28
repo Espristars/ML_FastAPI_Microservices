@@ -4,7 +4,8 @@ import json
 from aiokafka import AIOKafkaConsumer
 from aiogram import Bot
 from dotenv import load_dotenv
-from .link_generator import parse_task_token
+from link_generator import parse_task_token
+
 
 load_dotenv()
 
@@ -13,6 +14,7 @@ RESULTS_TOPIC = "tasks_results"
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 bot = Bot(token=BOT_TOKEN)
+
 
 async def consume_results():
     consumer = AIOKafkaConsumer(
@@ -31,6 +33,7 @@ async def consume_results():
             await bot.send_message(user_id, text)
     finally:
         await consumer.stop()
+
 
 def start_consumer_loop():
     loop = asyncio.get_event_loop()

@@ -1,15 +1,18 @@
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.types import Message
-from .link_generator import make_task_link
+from link_generator import make_task_link
 import httpx, os
 
+
 router = Router()
+
 
 @router.message(commands=["start"])
 async def cmd_start(message: Message):
     await message.answer(
         "Привет! Отправь мне команду /newtask, чтобы создать новую задачу."
     )
+
 
 @router.message(commands=["newtask"])
 async def cmd_newtask(message: Message):

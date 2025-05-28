@@ -1,20 +1,23 @@
-import os
-import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.exc import SQLAlchemyError
 
-from .db.session import engine, SessionLocal, Base
-from .api.routes import router as api_router
-from .kafka.producer import init_kafka_producer, kafka_producer
+from backend.fastapi_app.db.session import engine
+
+from backend.fastapi_app.db.models import Base
+
+from backend.fastapi_app.api.routes import router as api_router
+from backend.fastapi_app.kafka.producer import init_kafka_producer, kafka_producer
 
 
-app = FastAPI(title="Task Service")
+app = FastAPI(title="Task Service",
+              docs_url="/docs",
+              openapi_url="/openapi.json")
 
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )

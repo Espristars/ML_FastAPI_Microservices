@@ -2,7 +2,9 @@ from sqlalchemy import Column, Integer, String, DateTime, JSON
 from sqlalchemy.ext.declarative import declarative_base
 import datetime
 
+
 Base = declarative_base()
+
 
 class Task(Base):
     __tablename__ = "tasks"

@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from uuid import uuid4
 
-from ..db import crud
-from ..db.session import get_session
-from ..kafka.producer import send_task_message
-from ..db.models import Task as TaskModel
+from backend.fastapi_app.db import crud
+from backend.fastapi_app.db.session import get_session
+from backend.fastapi_app.kafka.producer import send_task_message
+from backend.fastapi_app.db.models import Task as TaskModel
 
 
 router = APIRouter()
